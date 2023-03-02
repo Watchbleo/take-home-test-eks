@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: take-home-shift-deployment2
+spec:
+  selector:
+    matchLabels:
+      run: shifts-app
+  template:
+    metadata:
+      labels:
+        run: shifts-app
+    spec:
+      containers:
+      - name: shifts-app
+        image: watchbleo/shifts-app:latest
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 500m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: take-home-shift-deployment2
+  labels:
+    run: shifts-app
+spec:
+  ports:
+  - port: 5000
+  selector:
+    run: shifts-app
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: take-home-shift-deployment2
+  namespace: default
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: take-home-shift-deployment2
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+## Use this block for networking latency
+
+# type: Object
+# object:
+#   metric:
+#     name: requests-per-second
+#   describedObject:
+#     apiVersion: networking.k8s.io/v1
+#     kind: Ingress
+#     name: main-route
+#   target:
+#     type: Value
+#     value: 2k 
+
+

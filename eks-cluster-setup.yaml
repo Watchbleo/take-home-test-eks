@@ -1,0 +1,15 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: take-home-test-cluster
+  region: us-east-1
+
+nodeGroups:
+  - name: ng-1
+    instanceType: t3.large
+
+  ### number of nodes/instances to be run
+    desiredCapacity: 3
+    ssh:
+      publickeyName: keypair 
